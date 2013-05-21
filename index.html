@@ -1,0 +1,184 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Harpy by ArtSabintsev</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <script src="javascripts/scale.fix.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>Harpy</h1>
+        <p>Notify users when a new version of your iOS app is available, and prompt them with the App Store link.</p>
+        <p class="view"><a href="https://github.com/ArtSabintsev/Harpy">View the Project on GitHub <small>ArtSabintsev/Harpy</small></a></p>
+        <ul>
+          <li><a href="https://github.com/ArtSabintsev/Harpy/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/ArtSabintsev/Harpy/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/ArtSabintsev/Harpy">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <h3>About (current release: v2.3.5)</h3>
+
+<p><strong>Harpy</strong> is a utility that checks a user's currently installed version of your iOS application against the version that is currently available in the AppStore. If a new version is available, an instance of UIAlertView is presented to the user informing them of the newer version, and giving them the option to update the application.</p>
+
+<h3>Features</h3>
+
+<ul>
+<li>Three types of alerts to present to the end-user (see <strong>Screenshots</strong> section)</li>
+<li>Optional delegate and delegate methods (see <strong>Optional Delegate</strong> section)</li>
+<li>Cocoapods Support</li>
+<li>Localized for 14 languages: Basque, Chinese (Simplified), Chinese (Traditional), Danish, Dutch, English, French, German, Italian, Japanese, Korean, Portuguese, Russian, Spanish</li>
+</ul><h3>Screenshots</h3>
+
+<ul>
+<li>The <strong>left picture</strong> forces the user to update the app.</li>
+<li>The <strong>center picture</strong> gives the user the option to update the app.</li>
+<li>The <strong>right picture</strong> gives the user the skip the current update.</li>
+<li>This option is based on the <code>HarpyAlertType</code> struct that is found in <code>Harpy.h</code>.</li>
+</ul><p><img src="https://github.com/ArtSabintsev/Harpy/blob/master/picForcedUpdate.png?raw=true" alt="Forced Update" title="Forced Update"><img src="https://github.com/ArtSabintsev/Harpy/blob/master/picOptionalUpdate.png?raw=true" alt="Optional Update" title="Optional Update"><img src="https://github.com/ArtSabintsev/Harpy/blob/master/picSkippedUpdate.png?raw=true" alt="Skipped Update" title="Optional Update"></p>
+
+<h3>Installation Instructions</h3>
+
+<p><strong>Note: Harpy utilizes ARC. Add the <em>-fobjc-arc</em> compiler flag in the build phases tab if your project doesn't use ARC</strong>.</p>
+
+<ol>
+<li><p>Copy the 'Harpy' folder into your Xcode project.</p></li>
+<li><p>Import <strong>Harpy.h</strong> into your AppDelegate or Pre-Compiler Header (.pch)</p></li>
+<li><p>In your <code>AppDelegate</code>, set the <strong>appID</strong>, and optionally, you can set the <strong>alertType</strong>.</p></li>
+<li>
+<p>In your <code>AppDelegate</code>, call <strong>only one</strong> of the <code>checkVersion</code> methods, as all three perform a check on your application's first launch. Use either:</p>
+
+<ul>
+<li>
+<code>checkVersion</code> in <code>application:didFinishLaunchingWithOptions</code>
+</li>
+<li>
+<code>checkVersionDaily</code> in <code>applicationDidBecomeActive</code>.</li>
+<li>
+<code>checkVersionWeekly</code> in <code>applicationDidBecomeActive</code>.</li>
+</ul>
+</li>
+</ol><div class="highlight"><pre><span class="k">-</span> <span class="p">(</span><span class="kt">BOOL</span><span class="p">)</span><span class="nf">application:</span><span class="p">(</span><span class="n">UIApplication</span> <span class="o">*</span><span class="p">)</span><span class="nv">application</span> <span class="nf">didFinishLaunchingWithOptions:</span><span class="p">(</span><span class="n">NSDictionary</span> <span class="o">*</span><span class="p">)</span><span class="nv">launchOptions</span>
+<span class="p">{</span>
+
+    <span class="c1">// Present Window before calling Harpy</span>
+    <span class="p">[</span><span class="n">self</span><span class="p">.</span><span class="n">window</span> <span class="n">makeKeyAndVisible</span><span class="p">]</span>
+
+    <span class="c1">// Set the App ID for your app</span>
+    <span class="p">[[</span><span class="n">Harpy</span> <span class="n">sharedInstance</span><span class="p">]</span> <span class="n">setAppID</span><span class="o">:</span><span class="s">@"&lt;app_id&gt;"</span><span class="p">];</span>
+
+    <span class="cm">/* (Optional) Set the Alert Type for your app </span>
+<span class="cm">     By default, the Singleton is initialized to HarpyAlertTypeOption */</span>
+    <span class="p">[[</span><span class="n">Harpy</span> <span class="n">sharedInstance</span><span class="p">]</span> <span class="n">setAlertType</span><span class="o">:&lt;</span><span class="n">alert_type</span><span class="o">&gt;</span><span class="p">];</span>
+
+    <span class="c1">// Perform check for new version of your app </span>
+    <span class="p">[[</span><span class="n">Harpy</span> <span class="n">sharedInstance</span><span class="p">]</span> <span class="n">checkVersion</span><span class="p">]</span> 
+<span class="p">}</span>
+
+<span class="k">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">applicationDidBecomeActive:</span><span class="p">(</span><span class="n">UIApplication</span> <span class="o">*</span><span class="p">)</span><span class="nv">application</span>
+<span class="p">{</span>
+
+    <span class="cm">/*</span>
+<span class="cm">     Perform daily check for new version of your app</span>
+<span class="cm">     Useful if user returns to you app from background after extended period of time</span>
+<span class="cm">     Place in applicationDidBecomeActive:</span>
+
+<span class="cm">     Also, performs version check on first launch.</span>
+<span class="cm">    */</span>
+    <span class="p">[[</span><span class="n">Harpy</span> <span class="n">sharedInstance</span><span class="p">]</span> <span class="n">checkVersionDaily</span><span class="p">];</span>
+
+    <span class="cm">/*</span>
+<span class="cm">     Perform weekly check for new version of your app</span>
+<span class="cm">     Useful if user returns to you app from background after extended period of time</span>
+<span class="cm">     Place in applicationDidBecomeActive:</span>
+
+<span class="cm">     Also, performs version check on first launch.</span>
+<span class="cm">     */</span>
+    <span class="p">[[</span><span class="n">Harpy</span> <span class="n">sharedInstance</span><span class="p">]</span> <span class="n">checkVersionWeekly</span><span class="p">];</span>
+
+<span class="p">}</span>
+</pre></div>
+
+<p>And you're all set!</p>
+
+<h3>Optinonal Delegate and Delegate Methods</h3>
+
+<p>If you'd like to handle or track the end-user's behavior, four delegate methods have been made available to you:</p>
+
+<div class="highlight"><pre>
+    <span class="c1">// User presented with update dialog</span>
+    <span class="o">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="n">harpyDidShowUpdateDialog</span><span class="p">;</span>
+
+    <span class="c1">// User did click on button that launched App Store.app</span>
+    <span class="o">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="n">harpyUserDidLaunchAppStore</span><span class="p">;</span>
+
+    <span class="c1">// User did click on button that skips version update</span>
+    <span class="o">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="n">harpyUserDidSkipVersion</span><span class="p">;</span>
+
+    <span class="c1">// User did click on button that cancels update dialog</span>
+    <span class="o">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="n">harpyUserDidCancel</span><span class="p">;</span>
+
+</pre></div>
+
+<h3>Important Note on AppStore Submissions</h3>
+
+<ul>
+<li>The AppStore reviewer will <strong>not</strong> see the alert. </li>
+</ul><h3>Release Notes (v2.3.5)</h3>
+
+<ul>
+<li>Cocoapods fix, thanks to <a href="https://github.com/trentw">TrentW</a>
+</li>
+</ul><h3>Contributors</h3>
+
+<ul>
+<li>
+<a href="http://www.github.com/getaaron">Aaron Brager</a> in v1.5.0</li>
+<li>
+<a href="https://github.com/ercillagorka">Ercillagorka</a> in v2.3.4</li>
+<li>
+<a href="https://github.com/dexcell0">Erick</a> in v2.3.3</li>
+<li>
+<a href="https://github.com/claaslange">Claas Lange</a> in v2.0.0</li>
+<li>
+<a href="https://github.com/kgn">David Keegan</a> in v2.3.0</li>
+<li>
+<a href="https://github.com/joshuatbrown">Josh T. Brown</a> in v2.0.0</li>
+<li>
+<a href="https://github.com/markrickert">Mark Rickert</a> in v2.3.2</li>
+<li>
+<a href="https://github.com/pius">Pius Uzamere</a> in v1.0.1</li>
+<li>
+<a href="https://github.com/RuiAAPeres">Rui Perese</a> in v2.3.1</li>
+<li>
+<a href="https://github.com/trentw">TrentW</a> in v2.3.5</li>
+</ul><h3>License</h3>
+
+<p>The MIT License (MIT)
+Copyright (c) 2012-2013 Arthur Ariel Sabintsev</p>
+
+<p>Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:</p>
+
+<p>The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.</p>
+
+<p>THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</p>
+      </section>
+    </div>
+    <footer>
+      <p>Project maintained by <a href="https://github.com/ArtSabintsev">ArtSabintsev</a></p>
+      <p>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></p>
+    </footer>
+    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
+    
+  </body>
+</html>
